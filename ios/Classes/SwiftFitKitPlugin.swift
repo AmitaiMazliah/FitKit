@@ -36,6 +36,9 @@ public class SwiftFitKitPlugin: NSObject, FlutterPlugin {
             } else if (call.method == "read") {
                 let request = try ReadRequest.fromCall(call: call)
                 read(request: request, result: result)
+            } else if (call.method == "subscribe") {
+                let request = try SubscribeRequest.fromCall(call: call)
+                subscribe(request: request, result: result)
             } else {
                 result(FlutterMethodNotImplemented)
             }
@@ -111,6 +114,11 @@ public class SwiftFitKitPlugin: NSObject, FlutterPlugin {
             self.readSample(request: request, result: result)
         }
     }
+    
+    private func subscribe(request: SubscribeRequest, result: @escaping FlutterResult) {
+        
+            self.subscribeToChanges(request: request, result: result)
+    }
 
     private func requestAuthorization(sampleTypes: Array<HKSampleType>, completion: @escaping (Bool, FlutterError?) -> Void) {
         healthStore!.requestAuthorization(toShare: nil, read: Set(sampleTypes)) { (success, error) in
@@ -121,6 +129,11 @@ public class SwiftFitKitPlugin: NSObject, FlutterPlugin {
 
             completion(true, nil)
         }
+    }
+    
+    private func subscribeToChanges(request: SubscribeRequest, result: @escaping FlutterResult) {
+        
+        healthStore!.execute(query)
     }
 
     private func readSample(request: ReadRequest, result: @escaping FlutterResult) {

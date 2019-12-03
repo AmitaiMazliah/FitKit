@@ -2,6 +2,8 @@ part of fit_kit;
 
 class FitKit {
   static const MethodChannel _channel = const MethodChannel('fit_kit');
+  static const _eventChannel = const EventChannel("fit_kit_events");
+  static Stream<dynamic> _eventsFetch;
 
   /// iOS isn't completely supported by HealthKit, false means no, true means user has approved or declined permissions.
   /// In case user has declined permissions read will just return empty list for declined data types.
@@ -48,6 +50,29 @@ class FitKit {
   static Future<FitData> readLast(DataType type) async {
     return await read(type: type, limit: 1)
         .then((results) => results.isEmpty ? null : results[0]);
+  }
+
+  static Future<int> subscribe(List<DataType> types, Function callback) {
+    if (_eventsFetch == null) {
+      _eventsFetch = _eventChannel.receiveBroadcastStream();
+
+      _eventsFetch.listen((dynamic v) {
+        callback();
+      });
+    }
+    Completer completer = new Completer<int>();
+
+    _channel
+        .invokeMethod('subscribe', {
+          "types": types.map((type) => _dataTypeToString(type)).toList(),
+        })
+        .then((dynamic status) {
+      completer.complete(status);
+    }).catchError((dynamic e) {
+      completer.completeError(e.details);
+    });
+
+    return completer.future;
   }
 
   static String _dataTypeToString(DataType type) {
