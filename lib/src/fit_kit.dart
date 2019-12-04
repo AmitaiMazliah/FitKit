@@ -3,7 +3,7 @@ part of fit_kit;
 class FitKit {
   static const MethodChannel _channel = const MethodChannel('fit_kit');
   static const _eventChannel = const EventChannel("fit_kit_events");
-  static Stream<dynamic> _eventsFetch;
+  static Stream<List<FitData>> _eventsFetch;
 
   /// iOS isn't completely supported by HealthKit, false means no, true means user has approved or declined permissions.
   /// In case user has declined permissions read will just return empty list for declined data types.
@@ -52,21 +52,22 @@ class FitKit {
         .then((results) => results.isEmpty ? null : results[0]);
   }
 
-  static Future<int> subscribe(List<DataType> types, Function callback) {
+  static Future<bool> subscribe(List<DataType> types, Function callback) {
     if (_eventsFetch == null) {
-      _eventsFetch = _eventChannel.receiveBroadcastStream();
+      _eventsFetch = _eventChannel.receiveBroadcastStream()
+          .map((response) => (response as List<dynamic>)
+          .map((item) => FitData.fromJson(item)).toList());
 
-      _eventsFetch.listen((dynamic v) {
-        callback();
-      });
+      _eventsFetch
+          .listen((List<FitData> v) {
+            callback(v);
+          });
     }
-    Completer completer = new Completer<int>();
+    Completer completer = new Completer<bool>();
 
-    _channel
-        .invokeMethod('subscribe', {
-          "types": types.map((type) => _dataTypeToString(type)).toList(),
-        })
-        .then((dynamic status) {
+    _channel .invokeMethod('subscribe', {
+      "types": types.map((type) => _dataTypeToString(type)).toList(),
+    }).then((dynamic status) {
       completer.complete(status);
     }).catchError((dynamic e) {
       completer.completeError(e.details);
