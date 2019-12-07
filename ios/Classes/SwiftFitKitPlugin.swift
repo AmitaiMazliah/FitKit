@@ -164,7 +164,6 @@ public class SwiftFitKitPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
                     if error != nil {
                         result(FlutterError(code: self.TAG, message: "*** An error occured while setting up the observer. \(error?.localizedDescription) ***", details: error))
                         abort()
-                        return
                     }
                     
                     debugPrint("observer query update handler called for type \(sampleType.type), error: \(error)")
@@ -205,8 +204,11 @@ public class SwiftFitKitPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
             anchor = NSKeyedUnarchiver.unarchiveObject(with: data) as! HKQueryAnchor
         }
         
-        let query = HKAnchoredObjectQuery(type: sampleType, predicate: nil, anchor: anchor, limit: HKObjectQueryNoLimit) { (query, samplesOrNil, deletedObjectsOrNil, newAnchor, errorOrNil) in
-            guard let samples = samplesOrNil, let deletedObjects = deletedObjectsOrNil else {
+        let now = Date()
+        let start = Calendar.current.startOfDay(for: now);
+        let predicate = HKQuery.predicateForSamples(withStart: start, end: now, options: .strictStartDate)
+        let query = HKAnchoredObjectQuery(type: sampleType, predicate: predicate, anchor: anchor, limit: HKObjectQueryNoLimit) { (query, samplesOrNil, deletedObjectsOrNil, newAnchor, errorOrNil) in
+            guard let samples = samplesOrNil else {
                 fatalError("*** An error occurred during the initial query: \(errorOrNil!.localizedDescription) ***")
             }
             
@@ -237,7 +239,10 @@ public class SwiftFitKitPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
             anchor = UserDefaults.standard.integer(forKey: "Anchor")
         }
         
-        let query = HKAnchoredObjectQuery(type: sampleType, predicate: nil, anchor: 0, limit: HKObjectQueryNoLimit) { (query, samplesOrNil, newAnchor, errorOrNil) in
+        let now = Date()
+        let start = Calendar.current.startOfDay(for: now);
+        let predicate = HKQuery.predicateForSamples(withStart: start, end: now, options: .strictStartDate)
+        let query = HKAnchoredObjectQuery(type: sampleType, predicate: predicate, anchor: 0, limit: HKObjectQueryNoLimit) { (query, samplesOrNil, newAnchor, errorOrNil) in
             guard let samples = samplesOrNil else {
                 fatalError("*** An error occurred during the initial query: \(errorOrNil!.localizedDescription) ***")
             }
