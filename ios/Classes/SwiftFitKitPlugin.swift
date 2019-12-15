@@ -154,11 +154,17 @@ public class SwiftFitKitPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
     }
     
     private func subscribeToChanges(request: SubscribeRequest, result: @escaping FlutterResult) {
+        var predicates = [NSPredicate]()
+        if (request.ignoreManualData) {
+            predicates.append(NSPredicate(format: "metadata.%K != YES", HKMetadataKeyWasUserEntered))
+        }
+        let compoundPredicate = NSCompoundPredicate(type: .and, subpredicates: predicates)
+        
         for sampleType in request.sampleTypes {
             let alreadySubscribe = UserDefaults.standard.bool(forKey: "fit_kit_subscribe_\(sampleType.type)")
             
             if (!alreadySubscribe) {
-                let query = HKObserverQuery(sampleType: sampleType.type, predicate: nil) {
+                let query = HKObserverQuery(sampleType: sampleType.type, predicate: compoundPredicate) {
                     query, completionHandler, error in
                     
                     if error != nil {
