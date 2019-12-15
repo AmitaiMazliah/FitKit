@@ -3,10 +3,12 @@ import HealthKit
 class SubscribeRequest {
     let types: Array<String>
     let sampleTypes: Array<(type: HKSampleType, unit: HKUnit)>
+    let ignoreManualData: Bool
 
-    private init(types: Array<String>, sampleTypes: Array<(type: HKSampleType, unit: HKUnit)>) {
+    private init(types: Array<String>, sampleTypes: Array<(type: HKSampleType, unit: HKUnit)>, ignoreManualData: Bool) {
         self.types = types
         self.sampleTypes = sampleTypes
+        self.ignoreManualData = ignoreManualData
     }
 
     static func fromCall(call: FlutterMethodCall) throws -> SubscribeRequest {
@@ -21,7 +23,8 @@ class SubscribeRequest {
                 unit: HKUnit.fromDartType(type: type)
             )
         }
+        let ignoreManualData = arguments["ignoreManualData"] as! Bool
 
-        return SubscribeRequest(types: types, sampleTypes: sampleTypes)
+        return SubscribeRequest(types: types, sampleTypes: sampleTypes, ignoreManualData: ignoreManualData)
     }
 }

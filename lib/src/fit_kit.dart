@@ -52,7 +52,11 @@ class FitKit {
         .then((results) => results.isEmpty ? null : results[0]);
   }
 
-  static Future<bool> subscribe(List<DataType> types, Function callback) {
+  static Future<bool> subscribe({
+    @required List<DataType> types,
+    @required Function callback,
+    bool ignoreManualData
+  }) {
     if (_eventsFetch == null) {
       _eventsFetch = _eventChannel.receiveBroadcastStream()
           .map((response) => (response as List<dynamic>)
@@ -67,6 +71,7 @@ class FitKit {
 
     _channel .invokeMethod('subscribe', {
       "types": types.map((type) => _dataTypeToString(type)).toList(),
+      "ignoreManualData": ignoreManualData ?? false
     }).then((dynamic status) {
       completer.complete(status);
     }).catchError((dynamic e) {
