@@ -42,6 +42,32 @@ extension HKSampleType {
         }
         return sampleType
     }
+    
+    public static func toDartType(sampleType: HKSampleType) -> String {
+        switch sampleType {
+        case HKSampleType.quantityType(forIdentifier: .heartRate):
+            return "heart_rate"
+        case HKSampleType.quantityType(forIdentifier: .stepCount):
+            return "step_count"
+        case HKSampleType.quantityType(forIdentifier: .height):
+            return "height"
+        case HKSampleType.quantityType(forIdentifier: .bodyMass):
+            return "weight"
+        case HKSampleType.quantityType(forIdentifier: .distanceWalkingRunning):
+            return "distance"
+        case HKSampleType.quantityType(forIdentifier: .activeEnergyBurned):
+            return "energy"
+        case HKSampleType.categoryType(forIdentifier: .sleepAnalysis):
+            return "sleep"
+        default:
+            if #available(iOS 9.0, *) {
+                if sampleType == HKSampleType.quantityType(forIdentifier: .dietaryWater) {
+                    return "water"
+                }
+            }
+            return ""
+        }
+    }
 }
 
 extension HKUnit {

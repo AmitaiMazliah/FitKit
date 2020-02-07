@@ -225,7 +225,8 @@ class FitKitPlugin(private val registrar: Registrar) : MethodCallHandler {
                 "date_from" to dataPoint.getStartTime(TimeUnit.MILLISECONDS),
                 "date_to" to dataPoint.getEndTime(TimeUnit.MILLISECONDS),
                 "source" to source,
-                "user_entered" to (source == "user_input")
+                "user_entered" to (source == "user_input"),
+                "type" to dataPoint.dataType.toDartType()
         )
     }
 
@@ -274,7 +275,8 @@ class FitKitPlugin(private val registrar: Registrar) : MethodCallHandler {
                 "date_from" to session.getStartTime(TimeUnit.MILLISECONDS),
                 "date_to" to session.getEndTime(TimeUnit.MILLISECONDS),
                 "source" to source,
-                "user_entered" to (source == "user_input")
+                "user_entered" to (source == "user_input"),
+                "type" to dataSets.get(0).dataType.toDartType()
         )
     }
 }

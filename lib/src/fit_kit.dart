@@ -102,6 +102,28 @@ class FitKit {
     }
     throw Exception('dataType $type not supported');
   }
+
+  static DataType stringToDataType(String json) {
+    switch (json) {
+      case "heart_rate":
+        return DataType.HEART_RATE;
+      case "step_count":
+        return DataType.STEP_COUNT;
+      case "height":
+        return DataType.HEIGHT;
+      case "weight":
+        return DataType.WEIGHT;
+      case "distance":
+        return DataType.DISTANCE;
+      case "energy":
+        return DataType.ENERGY;
+      case "water":
+        return DataType.WATER;
+      case "sleep":
+        return DataType.SLEEP;
+    }
+    throw Exception('dataType $json not supported');
+  }
 }
 
 enum DataType {

@@ -20,6 +20,20 @@ fun String.fromDartType(): Type {
     }
 }
 
+fun DataType.toDartType(): String {
+    return when (this) {
+        DataType.TYPE_HEART_RATE_BPM -> "heart_rate"
+        DataType.TYPE_STEP_COUNT_DELTA -> "step_count"
+        DataType.TYPE_HEIGHT -> "height"
+        DataType.TYPE_WEIGHT -> "weight"
+        DataType.TYPE_DISTANCE_DELTA -> "distance"
+        DataType.TYPE_CALORIES_EXPENDED -> "energy"
+        DataType.TYPE_HYDRATION -> "water"
+        DataType.TYPE_ACTIVITY_SEGMENT -> "sleep"
+        else -> ""
+    }
+}
+
 fun FitnessOptions.Builder.addDataTypes(dataTypes: List<DataType>) = apply {
     dataTypes.forEach { dataType -> addDataType(dataType) }
 }
