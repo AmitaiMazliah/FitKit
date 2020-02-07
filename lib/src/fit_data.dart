@@ -6,6 +6,7 @@ class FitData {
   final DateTime dateTo;
   final String source;
   final bool userEntered;
+  final DataType type;
 
   FitData(
     this.value,
@@ -13,6 +14,7 @@ class FitData {
     this.dateTo,
     this.source,
     this.userEntered,
+    this.type
   );
 
   FitData.fromJson(Map<dynamic, dynamic> json)
@@ -20,9 +22,10 @@ class FitData {
         dateFrom = DateTime.fromMillisecondsSinceEpoch(json['date_from']),
         dateTo = DateTime.fromMillisecondsSinceEpoch(json['date_to']),
         source = json['source'],
-        userEntered = json['user_entered'];
+        userEntered = json['user_entered'],
+        type = FitKit.stringToDataType(json['type']);
 
   @override
   String toString() =>
-      'FitData(value: $value, dateFrom: $dateFrom, dateTo: $dateTo, source: $source, userEntered: $userEntered)';
+      'FitData(value: $value, dateFrom: $dateFrom, dateTo: $dateTo, source: $source, userEntered: $userEntered, type: $type)';
 }
